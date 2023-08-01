@@ -7,6 +7,16 @@ public class Temp {
 	public static void main(String[] args) {
 		
 		Tabuleiro tabuleiro = new Tabuleiro(3, 3, 9);
+		
+		tabuleiro.registrarObervador(e -> {
+			if(e.isGanhou()) {
+				System.out.println("Ganhou :)");
+			} else {
+				System.out.println("Perdeu :(");
+			}
+		});
+		
+		
 		tabuleiro.marcar(0, 0);
 		tabuleiro.marcar(0, 1);
 		tabuleiro.marcar(0, 2);
@@ -17,7 +27,7 @@ public class Temp {
 		tabuleiro.marcar(2, 1);
 		tabuleiro.marcar(2, 2);
 		
-		tabuleiro.abrir(0, 0);
+		//tabuleiro.abrir(0, 0);
 		
 		
 	}

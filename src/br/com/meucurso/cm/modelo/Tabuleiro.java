@@ -2,6 +2,7 @@ package br.com.meucurso.cm.modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Tabuleiro implements CampoObservador{
@@ -11,7 +12,7 @@ public class Tabuleiro implements CampoObservador{
 	private int minas;
 	
 	private final List<Campo> campos = new ArrayList<>();
-
+	private final List<Consumer<ResultadoEvento>> observadores = new ArrayList<>();
 	
 	public Tabuleiro(int linhas, int colunas, int minas) {
 		this.linhas = linhas;
@@ -22,19 +23,23 @@ public class Tabuleiro implements CampoObservador{
 		associarVizinhos();
 		sortearMinas();	
 	}
-
-	public void abrir(int linha, int coluna) {
-		try {
-			campos.parallelStream()
-				.filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
-				.findFirst()
-				.ifPresent(c -> c.abrir());
-		} catch (Exception e) {
-			// FIXME Ajustar a implementação do método abrir
-			campos.forEach(c -> c.setAberto(true));
-			throw e;
-		}
+	
+	public void registrarObervador(Consumer<ResultadoEvento> observador) {
+		observadores.add(observador);
 	}
+	
+	public void notificarObservadores(Boolean resultado) {
+		observadores.stream()	
+			.forEach(o -> o.accept(new ResultadoEvento(resultado)));
+	}
+
+	public void abrir(int linha, int coluna) {	
+		campos.parallelStream()
+			.filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
+			.findFirst()
+			.ifPresent(c -> c.abrir());
+	}
+	
 	
 	public void marcar(int linha, int coluna) {
 		campos.parallelStream()
@@ -86,10 +91,17 @@ public class Tabuleiro implements CampoObservador{
 	@Override
 	public void eventoOcorreu(Campo campo, CampoEvento evento) {
 		if(evento == CampoEvento.EXPLODIR) {
-			System.out.println("Perdeu... :(");
+			mostrarMinas();
+			notificarObservadores(false);
 		} else if(objetivoAlcancado()) {
-			System.out.println("Ganhou... :)");
+			notificarObservadores(true);
 		}
 		
 	} 
+	
+	public void mostrarMinas() {
+		campos.stream()
+			.filter(c -> c.isMinado())
+			.forEach(c -> c.setAberto(true));
+	}
 }
