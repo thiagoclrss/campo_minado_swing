@@ -32,6 +32,10 @@ public class Tabuleiro implements CampoObservador{
 		observadores.stream()	
 			.forEach(o -> o.accept(new ResultadoEvento(resultado)));
 	}
+	
+	public void paraCadaCampo(Consumer<Campo> funcao) {
+		campos.forEach(funcao);
+	}
 
 	public void abrir(int linha, int coluna) {	
 		campos.parallelStream()
@@ -104,4 +108,22 @@ public class Tabuleiro implements CampoObservador{
 			.filter(c -> c.isMinado())
 			.forEach(c -> c.setAberto(true));
 	}
+
+	public int getLinhas() {
+		return linhas;
+	}
+
+	public void setLinhas(int linhas) {
+		this.linhas = linhas;
+	}
+
+	public int getColunas() {
+		return colunas;
+	}
+
+	public void setColunas(int colunas) {
+		this.colunas = colunas;
+	}
+	
+	
 }
