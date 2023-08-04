@@ -24,7 +24,7 @@ public class Tabuleiro implements CampoObservador{
 		sortearMinas();	
 	}
 	
-	public void registrarObervador(Consumer<ResultadoEvento> observador) {
+	public void registrarObservador(Consumer<ResultadoEvento> observador) {
 		observadores.add(observador);
 	}
 	
